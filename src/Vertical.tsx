@@ -1,7 +1,7 @@
 import Paper from "paper";
 import { useTableOverlayContext } from "./context";
 import { createLine, removeHandles } from "./helpers";
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 
 const Vertical = () => {
   const {
@@ -47,11 +47,10 @@ const Vertical = () => {
   };
 
   useEffect(() => {
-    console.log(currentTool);
     if (currentTool === "vertical") {
       addVertical();
     }
-  }, [currentTool]);
+  });
 
   return <button onClick={(e) => setTool()}>Vertical</button>;
 };

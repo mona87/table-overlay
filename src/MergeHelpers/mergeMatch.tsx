@@ -23,13 +23,15 @@ export const createNewLine = (
   }
 };
 
+type DuplicateType = { [key: number]: number };
+
 export const findMatchingPoints = (
   selection: SelectionInterface,
   selectedRectangle: paper.Path.Rectangle,
   highlight: paper.Path | paper.Item,
-  allPoints: number[],
-  matches: number[],
-  arr: number[]
+  allPoints: paper.Point[],
+  matches: paper.Point[],
+  arr: paper.Point[]
 ) => {
   //remove duplicate points
   selection.next = removeDuplicates(arr);
@@ -39,19 +41,28 @@ export const findMatchingPoints = (
     highlight?.data.name === "temp" &&
     selectedRectangle.segments.length > 0
   ) {
+    let test: paper.Point[] = selection.prev;
     //combine all the points
-    allPoints = selection.next.concat(selection.prev);
+    allPoints = selection.next.concat(test);
     //find the matching instersections in both rectangles
-    let dupes = allPoints.reduce((a, e) => {
-      a[e] = ++a[e] || 0;
+
+    let dupes = allPoints.reduce((a: DuplicateType, e: paper.Point) => {
+      let index = (e as unknown) as number;
+      a[index] = ++a[index] || 0;
       return a;
     }, {});
-    let findDuplicates = allPoints.filter((e) => dupes[e]);
+
+    let findDuplicates = allPoints.filter((e) => {
+      let index = (e as unknown) as number;
+      return dupes[index];
+    });
 
     //remove duplicates to get final set of points
-    matches = removeDuplicates(findDuplicates).sort(function (a, b) {
-      return a.y - b.y;
-    });
+    matches = removeDuplicates(findDuplicates).sort(
+      (a: paper.Point, b: paper.Point) => {
+        return a.y - b.y;
+      }
+    );
   }
   return matches;
 };
@@ -59,16 +70,15 @@ export const findMatchingPoints = (
 export const checkMatches = (
   group: paper.Group,
   canvas: HTMLCanvasElement,
-  matches: number[],
+  matches: paper.Point[],
   selection: SelectionInterface,
-  allPoints: number[]
+  allPoints: paper.Point[]
 ) => {
   let p1 = new Paper.Point(matches[0]).round();
   let p2 = new Paper.Point(matches[1]).round();
-
   if (group) {
     for (let i = 0; i < group.children.length; i++) {
-      let child: paper.Path = group.children[i];
+      let child = group.children[i] as paper.Path;
       if (
         child.hitTest(p1) &&
         child.hitTest(p2) &&

@@ -59,10 +59,10 @@ export const createHighlightRectangle = (
   };
 };
 
-export const removeDuplicates = (arr: number[]) => {
+export const removeDuplicates = (arr: paper.Point[]) => {
   let tmp: string[] = [];
   //remove duplicate points
-  let noDuplicates = arr.filter((v) => {
+  let noDuplicates: paper.Point[] = arr.filter((v: paper.Point) => {
     if (tmp.indexOf(v.toString()) < 0) {
       tmp.push(v.toString());
       return v;

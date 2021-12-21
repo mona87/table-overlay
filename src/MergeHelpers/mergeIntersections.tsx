@@ -1,35 +1,35 @@
 import { createLine } from "../helpers";
 
 export const findIntersections = (
-  group: paper.Group,
+  group: paper.Group | undefined,
   highlight: paper.Path | paper.Item | undefined,
   selectedRectangle: paper.Path.Rectangle,
-  arr: number[]
+  arr: paper.Point[] | undefined
 ) => {
   if (group) {
     let groupChildren: paper.PathItem[] | paper.Item[] = group.children;
     highlight = groupChildren[group.children.length - 1];
-    let intersections = [];
+    let intersections: paper.CurveLocation[][] | undefined = [];
 
     for (let i = 0; i < groupChildren.length; i++) {
-      let child: paper.Item = groupChildren[i];
+      let child = groupChildren[i] as paper.Path;
       let noInstersections = selectedRectangle?.getIntersections(child);
 
       if (noInstersections && noInstersections.length < 3 && noInstersections) {
         //only add curvelocations with lines (no rectangle)
-        intersections.push(selectedRectangle?.getIntersections(child));
+        let sel = selectedRectangle.getIntersections(child);
+        intersections.push(sel);
       }
     }
-    intersections = intersections.flat();
+    let intersectionsFlat = intersections.flat();
 
     arr = [];
     //get points from curvelocations
-    if (intersections) {
-      for (let i = 0; i < intersections.length; i++) {
-        arr.push(intersections[i].point.round());
+    if (intersectionsFlat) {
+      for (let i = 0; i < intersectionsFlat.length; i++) {
+        arr.push(intersectionsFlat[i].point.round());
       }
     }
-    console.log(arr);
     return { arr, highlight };
   }
 };

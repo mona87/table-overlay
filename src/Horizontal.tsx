@@ -1,7 +1,7 @@
 import Paper from "paper";
 import { useTableOverlayContext } from "./context";
 import { createLine, removeHandles } from "./helpers";
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 
 const Horizontal = () => {
   const {
@@ -26,7 +26,6 @@ const Horizontal = () => {
     if (setHandles) setHandles(undefined);
 
     Paper.view.onMouseDown = (event: paper.MouseEvent) => {
-      console.log("tru");
       if (
         currentTool === "horizontal" &&
         canvas &&
@@ -53,7 +52,7 @@ const Horizontal = () => {
     if (currentTool === "horizontal") {
       addHorizontal();
     }
-  }, [currentTool]);
+  });
 
   return <button onClick={(e) => setTool()}>Horizontal</button>;
 };

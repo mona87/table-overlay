@@ -5,7 +5,7 @@ import {
   createHighlightRectangle,
   removeHandles
 } from "./helpers";
-import { useEffect, useCallback, useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { getIntersections } from "./MergeHelpers/mergeIntersections";
 import "./styles.css";
 
@@ -28,11 +28,8 @@ const Label = () => {
   };
 
   const [selectValue, setSelectValue] = useState<LabelInterface>();
-  let currentMouse: paper.Point;
   let selectedRectangle: paper.Path.Rectangle;
-  let xCoordinate: paper.Point | number[];
-  let yCoordinate: paper.Point | number[];
-  const colorIndex = {
+  const colorIndex: { [key: string]: LabelInterface } = {
     default: {
       label: "Data Table (default)",
       color: "blue"
@@ -55,6 +52,7 @@ const Label = () => {
     removeHandles(handles);
     if (setHandles) setHandles(undefined);
     setCurrentTool("label");
+    setSelectValue(colorIndex[0]);
     setShowDropdown(true);
   };
 
@@ -68,7 +66,7 @@ const Label = () => {
   };
 
   const highlightLabel = (event: paper.MouseEvent) => {
-    currentMouse = event.point;
+    let currentMouse = event.point;
     if (rect && rect.contains(event.point) && group && canvas) {
       // remove last highlight rectangle if a new rectangle is selected
       if (selectedRectangle && !selectedRectangle?.data.label) {
@@ -105,8 +103,8 @@ const Label = () => {
           group
         );
 
-        xCoordinate = [horizontalPoints[0][0], verticalPoints[0][1]];
-        yCoordinate = [horizontalPoints[1][0], verticalPoints[1][1]];
+        let xCoordinate = [horizontalPoints[0][0], verticalPoints[0][1]];
+        let yCoordinate = [horizontalPoints[1][0], verticalPoints[1][1]];
 
         let colorIndex = selectValue.color;
         selectedRectangle = createRectangle(
@@ -142,7 +140,8 @@ const Label = () => {
   };
 
   const handleDropdownChange = (e: ChangeEvent) => {
-    let val: Record<string, any> = e.target.value;
+    const target = e.target as HTMLTextAreaElement;
+    const val = target.value;
     setSelectValue(colorIndex[val]);
   };
 
@@ -150,7 +149,7 @@ const Label = () => {
     if (currentTool === "label") {
       addLabel();
     }
-  }, [currentTool, selectValue]);
+  });
 
   return (
     <>

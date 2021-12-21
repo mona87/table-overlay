@@ -11,7 +11,7 @@ import {
 } from "./MergeHelpers/mergeIntersections";
 import { checkMatches, findMatchingPoints } from "./MergeHelpers/mergeMatch";
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 
 const Merge = () => {
   let {
@@ -34,9 +34,9 @@ const Merge = () => {
   let xCoordinate: paper.Point | number[];
   let yCoordinate: paper.Point | number[];
   let highlight: paper.Path | paper.Item | undefined = undefined;
-  let arr: number[] | undefined;
-  let allPoints: number[] = [];
-  let matches: number[];
+  let arr: paper.Point[] | undefined = [];
+  let allPoints: paper.Point[] = [];
+  let matches: paper.Point[];
 
   const setTool = () => {
     setCurrentTool("merge");
@@ -93,7 +93,7 @@ const Merge = () => {
         bottomPoint
       } = createHighlightRectangle(rect, event, currentMouse);
       //get interstections
-      let horizontalPoints: number[] = getIntersections(
+      let horizontalPoints: { [key: number]: number[] } = getIntersections(
         event,
         leftPoint,
         rightPoint,
@@ -104,7 +104,7 @@ const Merge = () => {
         group
       );
 
-      let verticalPoints: number[] = getIntersections(
+      let verticalPoints: { [key: number]: number[] } = getIntersections(
         event,
         topPoint,
         bottomPoint,
@@ -127,20 +127,24 @@ const Merge = () => {
         selectedRectangle.fillColor.alpha = 0.2;
     }
 
-    let values = findIntersections(group, highlight, selectedRectangle, arr);
-    arr = values?.arr;
-    highlight = values?.highlight;
+    if (group && selectedRectangle) {
+      let values = findIntersections(group, highlight, selectedRectangle, arr);
+      arr = values?.arr;
+      highlight = values?.highlight;
+    }
 
     //check for matches
+    if (selectedRectangle && highlight && arr) {
+      matches = findMatchingPoints(
+        selection,
+        selectedRectangle,
+        highlight,
+        allPoints,
+        matches,
+        arr
+      );
+    }
 
-    matches = findMatchingPoints(
-      selection,
-      selectedRectangle,
-      highlight,
-      allPoints,
-      matches,
-      arr
-    );
     if (matches?.length === 2 && group && canvas) {
       let values = checkMatches(group, canvas, matches, selection, allPoints);
       selection = values.selection;
@@ -161,7 +165,7 @@ const Merge = () => {
     if (currentTool === "merge") {
       onMerge();
     }
-  }, [currentTool]);
+  });
 
   return <button onClick={(e) => setTool()}>Merge</button>;
 };

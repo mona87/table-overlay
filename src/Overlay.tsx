@@ -78,8 +78,6 @@ const Overlay = () => {
   };
 
   const onMouseMove = (event: paper.MouseEvent) => {
-    // console.log('drag',offset)
-
     if (!dragging) {
       return;
     }

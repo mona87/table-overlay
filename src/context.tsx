@@ -1,4 +1,3 @@
-import Paper from "paper";
 import { createContext, useContext } from "react";
 
 export type TableOverlayInterface = {
@@ -30,6 +29,6 @@ export const TableOverlayContext = createContext<TableOverlayInterface>({
 export const useTableOverlayContext = () => useContext(TableOverlayContext);
 
 export type SelectionInterface = {
-  prev: number[] | string[];
-  next: number[] | string[];
+  prev: paper.Point[];
+  next: paper.Point[];
 };
